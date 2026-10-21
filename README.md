@@ -2,12 +2,20 @@
 
 Mô hình 3D dựng từ bản vẽ `docs/MatBang_Tang1_Tang2.pdf` (KT-01, mặt bằng tầng 1 – tầng 2, TL 1:100), chạy trực tiếp trên trình duyệt bằng Three.js.
 
-Chạy `npx serve .` rồi mở địa chỉ hiện ra (cần mạng để tải Three.js từ jsDelivr). Mở thẳng file `index.html` thì vẫn xem được, nhưng trình duyệt chặn tải model nội thất từ ổ đĩa.
+Chạy `npx serve site` rồi mở địa chỉ hiện ra (cần mạng để tải Three.js từ jsDelivr). Mở thẳng file `index.html` thì vẫn xem được, nhưng trình duyệt chặn tải model nội thất từ ổ đĩa.
 
 ## Đưa lên Netlify
-Repo đã có sẵn `netlify.toml` (site tĩnh, không cần build, thư mục publish là gốc repo). Hai cách:
+Repo đã có sẵn `netlify.toml`: không cần build, Netlify publish thư mục `site/` và triển khai hàm `netlify/functions/stats.mjs`. Hai cách:
 - **Kết nối Git**: Netlify → Add new site → Import an existing project → chọn repo này và nhánh cần deploy. Mỗi lần push, Netlify tự deploy lại.
-- **Kéo thả**: tải repo về, kéo cả thư mục vào trang Deploys của site trên Netlify (Netlify Drop).
+- **Kéo thả** (Netlify Drop) chỉ đưa lên phần tĩnh trong `site/`, không có bộ đếm lượt xem.
+
+## Lượt xem & người đang xem
+Huy hiệu góc phải trên hiện số người đang xem, tổng lượt xem và lượt xem hôm nay (giờ Việt Nam).
+- Hàm `netlify/functions/stats.mjs` chạy tại `/api/stats`, lưu số liệu trong Netlify Blobs (store `site-stats`). Không cần cấu hình hay khoá API.
+- Mỗi lần mở trang trong một tab/phiên trình duyệt tính 1 lượt; tải lại trang trong cùng phiên không tính thêm.
+- "Đang xem" là số trình duyệt đang mở trang và gửi tín hiệu trong khoảng 30–60 giây gần nhất (25 giây gửi một lần, tab ẩn thì ngừng).
+- Xem số liệu thô: mở `https://<tên-site>.netlify.app/api/stats`.
+- Ở nơi không có hàm này (bản xem trên claude.ai, `npx serve site`) huy hiệu tự ẩn.
 
 ## Chức năng
 - **Chế độ xem**: Toàn nhà · Bỏ mái · Tầng 2 · Tầng 1 (phím `1`–`4`). Ở chế độ tầng có thể bật/tắt mặt cắt tường ở cao độ sàn + 1,3 m (phím `C`).

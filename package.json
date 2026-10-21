@@ -1,0 +1,12 @@
+{
+  "name": "auudii-house-3d",
+  "private": true,
+  "type": "module",
+  "description": "Mô hình 3D nhà ở 2 tầng 17×7 m (KT-01) — site tĩnh + hàm đếm lượt xem trên Netlify",
+  "dependencies": {
+    "@netlify/blobs": "11.0.3"
+  },
+  "scripts": {
+    "test": "node test/stats.test.mjs"
+  }
+}

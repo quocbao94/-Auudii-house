@@ -1,3 +1,10 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body style="margin:0">
 <title>Nhà 2 tầng 17×7</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -13,6 +20,7 @@
   --muted: #95a3ad;        /* secondary text */
   --lamp: #f3b35c;         /* accent: warm lamp light */
   --lamp-ink: #2a1a05;
+  --live: #58d68d;          /* semantic: someone is viewing now */
   --font-ui: "Be Vietnam Pro", "Segoe UI", system-ui, -apple-system, sans-serif;
   --font-data: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
   color-scheme: dark;
@@ -133,11 +141,23 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--lamp); outl
 #panel.collapsed .credit .acts { display: none; }
 #panel.collapsed .credit img { width: 44px; }
 
-#loadpill {
+#topright {
   position: fixed; right: calc(16px + env(safe-area-inset-right, 0px)); top: calc(16px + env(safe-area-inset-top, 0px));
-  padding: 7px 12px; border-radius: 999px; font: 500 12px/1.2 var(--font-ui); color: var(--paper);
-  background: rgba(17, 26, 33, 0.8); border: 1px solid var(--line); pointer-events: none;
+  display: flex; flex-direction: column; align-items: flex-end; gap: 8px; pointer-events: none;
+  max-width: calc(100% - 32px - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px));
 }
+#loadpill, #stats {
+  padding: 7px 12px; border-radius: 999px; font: 500 12px/1.2 var(--font-ui); color: var(--paper);
+  background: rgba(17, 26, 33, 0.8); border: 1px solid var(--line);
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+}
+#stats { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; font-variant-numeric: tabular-nums; }
+#stats b { font-family: var(--font-data); font-weight: 500; color: var(--paper); }
+#stats .sep { color: var(--muted); }
+#stats .lbl { color: var(--muted); }
+#stats .live { display: inline-flex; align-items: center; gap: 6px; }
+#stats .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--live); box-shadow: 0 0 0 0 var(--live); animation: pulse 2s infinite; }
+@keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(88, 214, 141, 0.55); } 70% { box-shadow: 0 0 0 7px rgba(88, 214, 141, 0); } 100% { box-shadow: 0 0 0 0 rgba(88, 214, 141, 0); } }
 #status {
   position: fixed; inset: 0; display: grid; place-items: center; text-align: center;
   font-size: 14px; color: var(--muted); pointer-events: none; padding-inline: max(16px, env(safe-area-inset-left, 0px)) max(16px, env(safe-area-inset-right, 0px));
@@ -156,13 +176,22 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--lamp); outl
   #panel h1 { font-size: 18px; }
   .credit { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); border-radius: 0; }
   #watermark { display: none; }
+  #stats .today { display: none; }
 }
-@media (prefers-reduced-motion: reduce) { .sw input, .sw input::after { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .sw input, .sw input::after { transition: none; } #stats .dot { animation: none; } }
 </style>
 
 <div id="stage" aria-label="Mô hình 3D nhà ở 2 tầng"></div>
 <div id="labels"></div>
-<div id="loadpill" role="status" hidden>Đang tải vật liệu &amp; nội thất…</div>
+<div id="topright">
+  <div id="stats" hidden aria-live="polite">
+    <span class="live"><span class="dot" aria-hidden="true"></span><b id="st-live">–</b><span class="lbl">đang xem</span></span>
+    <span class="sep" aria-hidden="true">·</span>
+    <span><b id="st-total">–</b> <span class="lbl">lượt xem</span></span>
+    <span class="today"><span class="sep" aria-hidden="true">·</span> <span class="lbl">hôm nay</span> <b id="st-today">–</b></span>
+  </div>
+  <div id="loadpill" role="status" hidden>Đang tải vật liệu &amp; nội thất…</div>
+</div>
 <div id="status"><div><b>Đang dựng mô hình…</b>Tải Three.js và tạo hình học từ mặt bằng KT-01</div></div>
 
 <aside id="panel" aria-label="Điều khiển mô hình">
@@ -223,6 +252,41 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--lamp); outl
 </aside>
 <div id="watermark" aria-hidden="true"><img src="./assets/brand/logo-light.png" alt=""><span>Thiết kế<b>0932 705 063</b></span></div>
 
+<script>
+// Lượt xem & người đang xem: gọi hàm Netlify /api/stats. Ở nơi không có hàm này (bản xem trên claude.ai, mở file local) huy hiệu tự ẩn.
+(() => {
+  const el = document.getElementById('stats');
+  const fmt = new Intl.NumberFormat('vi-VN');
+  let id = '', counted = false;
+  try {
+    id = sessionStorage.getItem('house3d-viewer') || '';
+    counted = sessionStorage.getItem('house3d-counted') === '1';
+  } catch { /* storage blocked: count this page load only */ }
+  if (!/^[a-z0-9]{8,40}$/.test(id)) {
+    id = (crypto.randomUUID ? crypto.randomUUID().replace(/-/g, '') : Math.random().toString(36).slice(2) + Date.now().toString(36)).slice(0, 24);
+    try { sessionStorage.setItem('house3d-viewer', id); } catch {}
+  }
+  let failures = 0, timer = 0;
+  async function ping() {
+    if (document.hidden) return;
+    try {
+      const r = await fetch('/api/stats', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ id, visit: !counted }), cache: 'no-store' });
+      if (!r.ok || !(r.headers.get('content-type') || '').includes('json')) throw new Error(r.status);
+      const d = await r.json();
+      if (!counted) { counted = true; try { sessionStorage.setItem('house3d-counted', '1'); } catch {} }
+      document.getElementById('st-live').textContent = fmt.format(Math.max(1, d.live));
+      document.getElementById('st-total').textContent = fmt.format(d.total);
+      document.getElementById('st-today').textContent = fmt.format(d.today);
+      el.hidden = false; failures = 0;
+    } catch {
+      if (++failures >= 3 || el.hidden) { el.hidden = true; if (failures >= 3) clearInterval(timer); }
+    }
+  }
+  ping();
+  timer = setInterval(ping, 25000);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) ping(); });
+})();
+</script>
 <script type="importmap">
 { "imports": {
   "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
@@ -1384,3 +1448,6 @@ function frame(now) {
 }
 requestAnimationFrame(frame);
 </script>
+
+</body>
+</html>

@@ -1,7 +1,11 @@
-# Static site: no build step, publish the repo root (index.html + assets/).
+# Static site (no build step, publishes site/) + one function: /api/stats (visit & live-viewer counter).
 [build]
-  publish = "."
+  publish = "site"
   command = ""
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
 
 [[headers]]
   for = "/assets/*"
