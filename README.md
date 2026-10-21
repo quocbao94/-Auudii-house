@@ -11,7 +11,7 @@ Chạy `npx serve .` rồi mở địa chỉ hiện ra (cần mạng để tải
 - Nhãn tên phòng + diện tích theo bảng diện tích của bản vẽ; tuỳ chọn đổ bóng tiếp xúc (GTAO).
 
 ## Chất lượng hình
-- Vật liệu ảnh thật PBR (màu + normal + độ nhám) và model nội thất từ [Poly Haven](https://polyhaven.com) (CC0), nằm trong `assets/`. Texture đã thu về 1k, model nén WebP 512 px.
+- Vật liệu ảnh thật PBR (màu + normal + độ nhám) và model nội thất từ [Poly Haven](https://polyhaven.com) (CC0), nằm trong `assets/`. Texture đã thu về 1k; model lưu dạng glTF JSON (hình học nhúng sẵn) kèm ảnh WebP 512 px.
 - Cây, bụi, hàng rào cây dựng bằng lá thẻ (instanced) có bóng đổ; cỏ dạng ngọn rung theo gió.
 - Hậu kỳ: khử răng cưa MSAA, đổ bóng tiếp xúc GTAO, bloom cho đèn ban đêm; bóng nắng 4096 px.
 - Ban ngày đèn trong phòng đóng vai ánh sáng dội (giả lập GI) để nội thất không bị tối khi xem mặt cắt.

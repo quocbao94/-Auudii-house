@@ -1079,7 +1079,7 @@ foliage(g2, f2Leaves, true);
 // ---------- furniture models (Poly Haven, CC0) — streamed after first frame ----------
 const modelCache = new Map();
 function loadModel(name) {
-  if (!modelCache.has(name)) modelCache.set(name, new Promise((res, rej) => gltfLoader.load(`${ASSET}models/${name}.glb`, (gl) => {
+  if (!modelCache.has(name)) modelCache.set(name, new Promise((res, rej) => gltfLoader.load(`${ASSET}models/${name}.json`, (gl) => {
     gl.scene.traverse((o) => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; registerCut(o.material); } });
     res(gl.scene);
   }, undefined, rej)));
