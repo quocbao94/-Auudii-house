@@ -47,12 +47,45 @@ body { background: var(--ink); color: var(--paper); font-family: var(--font-ui);
   box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
 }
 #panel header {
-  display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 4px 12px;
+  display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 2px 12px;
   padding: 14px 16px 12px; border-bottom: 1px solid var(--line);
 }
+.brand-mark { grid-row: 1 / span 2; width: 40px; height: auto; display: block; }
+.htext { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+#collapse { grid-row: 1 / span 2; grid-column: 3; }
+
+/* contact strip: always visible, also when the panel is collapsed */
+.credit {
+  display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 10px 12px;
+  padding: 12px 16px 14px; border-top: 1px solid var(--line); background: rgba(236, 230, 218, 0.03);
+  border-radius: 0 0 10px 10px;
+}
+.credit img { width: 64px; height: auto; display: block; }
+.credit .who { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.credit .role { font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+.credit .phone { font-family: var(--font-data); font-size: 17px; letter-spacing: 0.02em; color: var(--lamp); font-variant-numeric: tabular-nums; user-select: all; }
+.credit .acts { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.credit .acts a, .credit .acts button {
+  display: flex; align-items: center; justify-content: center; gap: 6px; padding: 8px 6px; border-radius: 6px;
+  font: 600 12.5px/1 var(--font-ui); text-decoration: none; cursor: pointer;
+}
+.credit .acts a { background: var(--lamp); color: var(--lamp-ink); border: 1px solid var(--lamp); }
+.credit .acts button { background: var(--ink-2); color: var(--paper); border: 1px solid var(--line); }
+.credit .acts button:hover { border-color: var(--lamp); }
+.credit svg { width: 14px; height: 14px; }
+
+#watermark {
+  position: fixed; right: calc(16px + env(safe-area-inset-right, 0px)); bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  display: flex; align-items: center; gap: 10px; padding: 8px 12px 8px 10px; border-radius: 8px;
+  background: rgba(17, 26, 33, 0.62); border: 1px solid rgba(236, 230, 218, 0.12);
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); pointer-events: none;
+}
+#watermark img { width: 74px; height: auto; display: block; }
+#watermark span { font-size: 10.5px; line-height: 1.35; color: var(--muted); letter-spacing: 0.04em; }
+#watermark b { display: block; font-family: var(--font-data); font-weight: 500; font-size: 12.5px; color: var(--paper); letter-spacing: 0.02em; }
 .eyebrow { font-family: var(--font-data); font-size: 10.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); grid-column: 1 / -1; }
 #panel h1 { margin: 0; font-size: 21px; font-weight: 700; letter-spacing: -0.01em; text-wrap: balance; }
-#panel h1 small { font-weight: 400; color: var(--muted); font-size: 13px; margin-left: 6px; }
+#panel h1 small { display: block; font-weight: 400; color: var(--muted); font-size: 12.5px; margin-top: 2px; letter-spacing: 0; }
 #collapse {
   width: 30px; height: 30px; border-radius: 6px; border: 1px solid var(--line);
   background: var(--ink-2); color: var(--paper); font: 600 15px/1 var(--font-ui); cursor: pointer;
@@ -96,6 +129,9 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--lamp); outl
 
 #panel.collapsed .pbody { display: none; }
 #panel.collapsed header { border-bottom: 0; }
+#panel.collapsed .credit { grid-template-columns: auto 1fr; padding-block: 10px; }
+#panel.collapsed .credit .acts { display: none; }
+#panel.collapsed .credit img { width: 44px; }
 
 #loadpill {
   position: fixed; right: calc(16px + env(safe-area-inset-right, 0px)); top: calc(16px + env(safe-area-inset-top, 0px));
@@ -118,6 +154,8 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--lamp); outl
   #panel header { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
   .pbody { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
   #panel h1 { font-size: 18px; }
+  .credit { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); border-radius: 0; }
+  #watermark { display: none; }
 }
 @media (prefers-reduced-motion: reduce) { .sw input, .sw input::after { transition: none; } }
 </style>
@@ -129,8 +167,11 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--lamp); outl
 
 <aside id="panel" aria-label="Điều khiển mô hình">
   <header>
-    <div class="eyebrow">KT-01 · Nhà ở 2 tầng</div>
-    <h1>17 × 7 m<small>2 tầng · 184 m² sàn</small></h1>
+    <img class="brand-mark" src="./assets/brand/mark-light.png" alt="Bảo Alone" width="247" height="257">
+    <div class="htext">
+      <div class="eyebrow">KT-01 · Nhà ở 2 tầng</div>
+      <h1>17 × 7 m<small>2 tầng · 184 m² sàn</small></h1>
+    </div>
     <button id="collapse" type="button" aria-expanded="true" aria-controls="pbody" title="Thu gọn">–</button>
   </header>
   <div class="pbody" id="pbody">
@@ -168,7 +209,19 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--lamp); outl
     </section>
     <div class="hint">Kéo để xoay · cuộn / chụm để phóng to · chuột phải hoặc hai ngón để dời. Phím <kbd>1</kbd>–<kbd>4</kbd> đổi chế độ, <kbd>L</kbd> bật đèn, <kbd>N</kbd> ngày/đêm.</div>
   </div>
+  <div class="credit">
+    <img src="./assets/brand/logo-light.png" alt="Bảo Alone – Creative Studio · Game Studio" width="502" height="388">
+    <div class="who">
+      <span class="role">Liên hệ thiết kế</span>
+      <span class="phone" id="phone">0932 705 063</span>
+    </div>
+    <div class="acts">
+      <a href="tel:0932705063" id="call"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25c1.1.37 2.3.57 3.6.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg>Gọi ngay</a>
+      <button type="button" id="copy-phone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg><span>Sao chép số</span></button>
+    </div>
+  </div>
 </aside>
+<div id="watermark" aria-hidden="true"><img src="./assets/brand/logo-light.png" alt=""><span>Thiết kế<b>0932 705 063</b></span></div>
 
 <script type="importmap">
 { "imports": {
@@ -1286,6 +1339,12 @@ $('l-in').addEventListener('change', (e) => { state.lin = e.target.checked; upda
 $('l-out').addEventListener('change', (e) => { state.lout = e.target.checked; updateLights(); });
 $('labels-on').addEventListener('change', (e) => { state.labels = e.target.checked; updateLabels(); });
 $('hq').addEventListener('change', (e) => { state.hq = e.target.checked; gtao.enabled = state.hq; });
+$('copy-phone').addEventListener('click', () => {
+  const label = $('copy-phone').querySelector('span');
+  const done = (msg) => { label.textContent = msg; setTimeout(() => { label.textContent = 'Sao chép số'; }, 1800); };
+  const select = () => { const r = document.createRange(); r.selectNodeContents($('phone')); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); done('Đã chọn số'); };
+  try { navigator.clipboard.writeText('0932705063').then(() => done('Đã sao chép'), select); } catch { select(); }
+});
 $('collapse').addEventListener('click', () => {
   const p = $('panel'); const c = p.classList.toggle('collapsed');
   $('collapse').textContent = c ? '+' : '–'; $('collapse').setAttribute('aria-expanded', String(!c)); $('collapse').title = c ? 'Mở rộng' : 'Thu gọn';
