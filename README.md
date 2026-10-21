@@ -4,6 +4,11 @@ Mô hình 3D dựng từ bản vẽ `docs/MatBang_Tang1_Tang2.pdf` (KT-01, mặt
 
 Chạy `npx serve .` rồi mở địa chỉ hiện ra (cần mạng để tải Three.js từ jsDelivr). Mở thẳng file `index.html` thì vẫn xem được, nhưng trình duyệt chặn tải model nội thất từ ổ đĩa.
 
+## Đưa lên Netlify
+Repo đã có sẵn `netlify.toml` (site tĩnh, không cần build, thư mục publish là gốc repo). Hai cách:
+- **Kết nối Git**: Netlify → Add new site → Import an existing project → chọn repo này và nhánh cần deploy. Mỗi lần push, Netlify tự deploy lại.
+- **Kéo thả**: tải repo về, kéo cả thư mục vào trang Deploys của site trên Netlify (Netlify Drop).
+
 ## Chức năng
 - **Chế độ xem**: Toàn nhà · Bỏ mái · Tầng 2 · Tầng 1 (phím `1`–`4`). Ở chế độ tầng có thể bật/tắt mặt cắt tường ở cao độ sàn + 1,3 m (phím `C`).
 - **Ngày – đêm**: thanh trượt giờ 0–24h, mặt trời và bầu trời thay đổi theo giờ; nút nhanh Sáng / Chiều / Hoàng hôn / Đêm (phím `N`).
