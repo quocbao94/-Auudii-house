@@ -3,10 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="format-detection" content="telephone=no">
 </head>
 <body style="margin:0">
 <title>Nhà 2 tầng 17×7</title>
 <meta name="claude:viewport-fit-sides" content="cover">
+<meta name="format-detection" content="telephone=no">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap">
@@ -71,6 +73,8 @@ body { background: var(--ink); color: var(--paper); font-family: var(--font-ui);
 .credit img { width: 64px; height: auto; display: block; }
 .credit .who { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .credit .role { font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+/* iOS turns numbers into blue links; keep the designed look */
+.credit a[x-apple-data-detectors], #watermark a[x-apple-data-detectors] { color: inherit !important; text-decoration: none !important; font: inherit !important; }
 .credit .phone { font-family: var(--font-data); font-size: 17px; letter-spacing: 0.02em; color: var(--lamp); font-variant-numeric: tabular-nums; user-select: all; }
 .credit .acts { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
 .credit .acts a, .credit .acts button {
@@ -250,6 +254,12 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--lamp); outl
     </div>
   </div>
 </aside>
+<script>
+  if (matchMedia('(max-width: 640px)').matches) {
+    const p = document.getElementById('panel'), b = document.getElementById('collapse');
+    p.classList.add('collapsed'); b.textContent = '+'; b.setAttribute('aria-expanded', 'false'); b.title = 'Mở rộng';
+  }
+</script>
 <div id="watermark" aria-hidden="true"><img src="./assets/brand/logo-light.png" alt=""><span>Thiết kế<b>0932 705 063</b></span></div>
 
 <script>
@@ -1412,6 +1422,7 @@ $('copy-phone').addEventListener('click', () => {
 $('collapse').addEventListener('click', () => {
   const p = $('panel'); const c = p.classList.toggle('collapsed');
   $('collapse').textContent = c ? '+' : '–'; $('collapse').setAttribute('aria-expanded', String(!c)); $('collapse').title = c ? 'Mở rộng' : 'Thu gọn';
+  updateViewOffset();
 });
 addEventListener('keydown', (e) => {
   if (e.target.tagName === 'INPUT' && e.target.type === 'range') return;
@@ -1422,8 +1433,27 @@ addEventListener('keydown', (e) => {
   else if (k === 'n') { (state.time > 6.5 && state.time < 17.5 ? $('t-night') : $('t-afternoon')).click(); }
   else if (k === 'c') { if (!$('cut').disabled) $('cut').click(); }
 });
+// On phones the panel is a bottom sheet: shift the projection centre up so the model sits in the free area above it.
+function panelCover() {
+  return matchMedia('(max-width: 640px)').matches ? Math.min($('panel').getBoundingClientRect().height, innerHeight * 0.6) : 0;
+}
+function updateViewOffset() {
+  const cover = panelCover();
+  if (cover > 0) camera.setViewOffset(innerWidth, innerHeight, 0, cover / 2, innerWidth, innerHeight);
+  else camera.clearViewOffset();
+  camera.updateProjectionMatrix();
+}
+// back the camera off until the whole house (≈ 9.5 m radius) fits the visible area
+function fitHouse() {
+  const visH = innerHeight - panelCover(), t = Math.tan((camera.fov / 2) * DEG);
+  const half = Math.min(t * (visH / innerHeight), t * (innerWidth / innerHeight));
+  const dist = Math.min(controls.maxDistance, 9.5 / half);
+  const dir = camera.position.clone().sub(controls.target).normalize();
+  camera.position.copy(controls.target).addScaledVector(dir, dist);
+  controls.update();
+}
 addEventListener('resize', () => {
-  camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix();
+  camera.aspect = innerWidth / innerHeight; updateViewOffset();
   renderer.setSize(innerWidth, innerHeight); labelRenderer.setSize(innerWidth, innerHeight);
   const s = renderer.getDrawingBufferSize(new THREE.Vector2());
   composer.setSize(innerWidth, innerHeight); gtao.setSize(s.x, s.y); bloom.setSize(s.x, s.y);
@@ -1431,6 +1461,8 @@ addEventListener('resize', () => {
 
 // ---------- go ----------
 $('hq').checked = state.hq;
+updateViewOffset();
+if (matchMedia('(max-width: 640px)').matches) fitHouse();
 setTime(state.time, false); rebuildEnv(); applyMode();
 statusEl.hidden = true;
 furnish();
