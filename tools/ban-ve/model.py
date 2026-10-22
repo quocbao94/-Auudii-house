@@ -51,23 +51,20 @@ RAILS2 = [
 SLABS2 = [(-0.1, 4.1, -0.1, 7.1), (7.0, 17.1, -0.1, 7.1), (4.1, 7.0, 2.0, 7.1), (4.1, 7.0, -0.1, 0.1)]
 STAIR_VOID = (4.1, 7.0, 0.1, 2.0)
 
-# hip roof (mái thái) over px 7..15 with 0.55 overhang; flat roof block over the stair hall
-OV = 0.55
-EAVE = (7.0 - OV, 15.0 + OV, -OV, 7.0 + OV)
-ROOF_Z0 = ROOFB + 0.05
-ROOF_RH = 2.1
-_W, _D = EAVE[1] - EAVE[0], EAVE[3] - EAVE[2]
-RIDGE = ((EAVE[0] + EAVE[1]) / 2 - (_W - _D) / 2, (EAVE[0] + EAVE[1]) / 2 + (_W - _D) / 2, (EAVE[2] + EAVE[3]) / 2)
-STAIR_BOX = (3.8, 7.0, -0.2, 3.2)        # khối mái bằng ô thang, cao +0.40 trên sàn mái
+# mái bằng BTCT trên khối phòng ngủ: sênô đua 0.35 m + tường chắn mái 0.7 m; khối ô thang cao bằng tường chắn, giếng trời kính
+PH = 0.7                                  # tường chắn mái trên mặt sàn mái
+ROOF_TOP = ROOFB + PH + 0.05              # +7.400 đỉnh tường chắn / khối thang
+CORNICE_O = 0.35
+EAVE = (6.9 - CORNICE_O, 15.1 + CORNICE_O, -0.1 - CORNICE_O, 7.1 + CORNICE_O)   # mép sênô
+ROOF_MAIN = (6.9, 15.1, -0.1, 7.1)
+PARAPETS = [(7.0, 15.1, -0.1, 0.05), (6.9, 15.1, 6.95, 7.1), (14.95, 15.1, 0.05, 6.95), (6.9, 7.05, 3.2, 6.95)]
+CORNICES = [(6.9, 15.45, -0.45, -0.1), (6.9, 15.45, 7.1, 7.45), (15.1, 15.45, -0.1, 7.1), (6.55, 6.9, 3.25, 7.45)]
+DRAINS = [(14.65, 0.45), (14.65, 6.55)]
+STAIR_BOX = (3.8, 7.0, -0.2, 3.2)
 SKYLIGHT = (4.6, 6.4, 0.6, 2.2)
 
 def roof_faces():
-    x0, x1, y0, y1 = EAVE
-    r1, r2, yc = RIDGE
-    z0, zr = ROOF_Z0, ROOF_Z0 + ROOF_RH
-    A, Bq, C, D = (x0, y0, z0), (x1, y0, z0), (x1, y1, z0), (x0, y1, z0)
-    R1, R2 = (r1, yc, zr), (r2, yc, zr)
-    return [[D, C, R2, R1], [Bq, A, R1, R2], [A, D, R1], [C, Bq, R2]]
+    return []
 
 # stair treads as vertical prisms: (footprint polygon, top z)
 def stair_treads():

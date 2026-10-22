@@ -40,5 +40,5 @@ cd tools/ban-ve && python3 gen.py /tmp/bv.html cover.jpg && node print.mjs /tmp/
 - Kích thước lấy theo trục; tường bao 200, tường ngăn 120–200; chiều cao tầng 3,3 m; nền tầng 1 tôn cao 0,45 m.
 - Cầu thang chữ L: 4 bậc + 4 bậc xoay + 8 bậc, 17 cổ bậc ≈ 194 mm.
 - Ký hiệu zigzag được dựng là cửa xếp (theo ghi chú 5).
-- Mái thái trên khối phòng ngủ tầng 2, mái bằng có giếng trời trên ô thang, pergola gỗ trên sân thượng: là đề xuất vì bản vẽ chưa có mặt bằng mái.
+- Mái bằng BTCT trên khối phòng ngủ tầng 2 (sênô đua 0,35 m, tường chắn mái 0,7 m, đỉnh +7.400), khối ô thang cao bằng tường chắn có giếng trời kính, pergola gỗ trên sân thượng: là đề xuất vì bản vẽ chưa có mặt bằng mái.
 - Nội thất, vị trí cửa đi, cửa sổ đúng theo phác thảo; sofa sinh hoạt chung và cây xanh là đề xuất.

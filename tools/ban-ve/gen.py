@@ -415,7 +415,7 @@ def plan2(V):
     V.rect(0.08, 6.92, 3.15, 7.0, 'over')
     for (u, v) in ((0.15, 3.3), (0.15, 6.85), (3.5, 6.85), (6.85, 6.85), (6.85, 3.3)): V.rect(u - 0.07, u + 0.07, v - 0.07, v + 0.07, 'post')
     V.text(3.5, 4.35, 'GIÀN PERGOLA GỖ PHÍA TRÊN', 'note', 1.5)
-    # mép mái thái phía trên
+    # mép sênô mái phía trên
     V.rect(*EAVE, 'over')
     draw_walls_plan(V, WALLS2)
     room_labels(V, ROOMS2)
@@ -444,45 +444,34 @@ def roofplan(V):
     V.text(3.5, 5.1, 'GIÀN PERGOLA GỖ', 'notebg', 1.9, weight=600)
     V.text(3.5, 5.45, 'SÂN THƯỢNG +3.300', 'notebg', 1.6)
     V.text(16.0, 3.5, 'SÂN SAU +3.300', 'note', 1.6, rot=-90)
-    # khối mái bằng ô thang + giếng trời
+    # mái bằng: sênô (viền ghi) → tường chắn → mặt mái chống thấm
+    for c in CORNICES: V.rect(*c, 'cornice')
+    V.rect(*ROOF_MAIN, 'flatmain')
+    for pp in PARAPETS: V.rect(*pp, 'parapet')
     V.rect(*STAIR_BOX, 'flat')
     V.rect(*SKYLIGHT, 'skylight')
     V.line(SKYLIGHT[0], SKYLIGHT[2], SKYLIGHT[1], SKYLIGHT[3], 'fthin'); V.line(SKYLIGHT[0], SKYLIGHT[3], SKYLIGHT[1], SKYLIGHT[2], 'fthin')
-    V.text(5.5, 2.55, 'MÁI BẰNG BTCT', 'small', 1.7, weight=600)
-    V.text(5.5, 2.85, 'đỉnh +7.090', 'small', 1.5)
+    V.text(5.4, 2.55, 'KHỐI THANG', 'small', 1.7, weight=600)
+    V.text(5.4, 2.85, 'đỉnh +7.400', 'small', 1.5)
     V.text(5.5, 0.42, 'GIẾNG TRỜI KÍNH', 'small', 1.4)
-    # mái thái: hatch ngói song song với mép
-    x0, x1, y0, y1 = EAVE; r1, r2, yc = RIDGE
-    faces = {'front': [(x0, y1), (x1, y1), (r2, yc), (r1, yc)], 'back': [(x1, y0), (x0, y0), (r1, yc), (r2, yc)],
-             'left': [(x0, y0), (x0, y1), (r1, yc)], 'right': [(x1, y1), (x1, y0), (r2, yc)]}
-    for name, pts in faces.items():
-        V.poly(pts, 'roof')
-    # tile courses
-    step = 0.33
-    k = 1
-    while y0 + k * step < yc - 0.02:
-        d = k * step
-        V.line(x0 + d, y0 + d, x1 - d, y0 + d, 'tilel'); V.line(x0 + d, y1 - d, x1 - d, y1 - d, 'tilel')
-        V.line(x0 + d, y0 + d, x0 + d, y1 - d, 'tilel'); V.line(x1 - d, y0 + d, x1 - d, y1 - d, 'tilel')
-        k += 1
-    for pts in faces.values(): V.poly(pts, 'roofedge')
-    V.line(r1, yc, r2, yc, 'ridge')
-    for a in ((x0, y0), (x0, y1)): V.line(a[0], a[1], r1, yc, 'ridge')
-    for a in ((x1, y0), (x1, y1)): V.line(a[0], a[1], r2, yc, 'ridge')
-    # slope arrows + labels
-    for (u, v, du, dv) in ((11.0, 1.4, 0, -1), (11.0, 5.6, 0, 1), (8.0, 3.5, -1, 0), (14.0, 3.5, 1, 0)):
-        V.line(u - du * 0.6, v - dv * 0.6, u + du * 0.6, v + dv * 0.6, 'slope'); arrow(V, u + du * 0.6, v + dv * 0.6, du, dv)
-    V.text(11.0, 1.1, 'i = 52% (≈ 27°)', 'notebg', 1.6)
-    V.text(11.0, 6.15, 'MÁI NGÓI XÁM', 'notebg', 1.9, weight=600)
-    V.text(11.0, 6.45, 'đỉnh nóc +8.800', 'notebg', 1.6)
-    V.text(11.0, 3.35, 'NÓC', 'notebg', 1.5)
+    for (u, v) in DRAINS:
+        V.circle(u, v, 0.11, 'drain'); V.circle(u, v, 0.05, 'fthin')
+    for (u, v, du, dv) in ((11.0, 2.2, 0.75, -0.5), (11.0, 4.8, 0.75, 0.5)):
+        V.line(u, v, u + du * 2.6, v + dv * 2.6, 'slope'); arrow(V, u + du * 2.6, v + dv * 2.6, du / 0.9, dv / 0.9)
+    V.line(7.05, 3.5, 14.95, 3.5, 'hidden')
+    V.text(11.0, 3.2, 'MÁI BẰNG BTCT', 'notebg', 1.9, weight=600)
+    V.text(11.0, 3.95, 'chống thấm, dốc i = 2% về phễu thu', 'notebg', 1.6)
+    V.text(14.1, 0.85, 'PHỄU THU Ø90', 'small', 1.3)
+    V.text(11.0, 6.55, 'tường chắn mái 200 · đỉnh +7.400', 'notebg', 1.5)
+    V.text(11.0, -0.22, 'SÊNÔ ĐUA 350', 'notebg', 1.3)
+    x0, x1, y0, y1 = EAVE
     # dims
     dim_chain(V, 'x', [0, 4, 7, 15, 17], -1.15, -1, ext_from=-0.15)
-    dim_chain(V, 'x', [x0, r1, r2, x1], -1.65, -1)
+    dim_chain(V, 'x', [x0, 6.9, 15.1, x1], -1.65, -1)
     dim_chain(V, 'x', [0, 17], 8.25, 1, ext_from=7.15)
     dim_chain(V, 'x', [x0, 7, 15, x1], 7.85, 1)
-    dim_chain(V, 'y', [y0, 0, 7, y1], 17.75, -1, ext_from=x1 + 0.05)
-    dim_chain(V, 'y', [y0, yc, y1], 18.25, -1)
+    dim_chain(V, 'y', [y0, -0.1, 7.1, y1], 17.75, -1, ext_from=x1 + 0.05)
+    dim_chain(V, 'y', [y0, y1], 18.25, -1)
     dim_chain(V, 'y', [0, 3.2, 7], -0.85, -1, ext_from=-0.15)
 
 def siteplan(V):
@@ -566,10 +555,11 @@ def build_solids():
     while px < 6.9: add(box(px, px + 0.06, 3.15, 7.0, pz, pz + 0.14, 'timber')); px += 0.32
     # mái
     add(box(3.9, 7.1, -0.1, 3.1, TOP2, ROOFB, 'slab')); add(box(7.0, 15.1, -0.1, 7.1, TOP2, ROOFB, 'slab'))
-    add(box(*STAIR_BOX, ROOFB, ROOFB + 0.4, 'block')); add(box(*STAIR_BOX, ROOFB + 0.4, ROOFB + 0.44, 'band'))
-    add(box(*SKYLIGHT, ROOFB + 0.4, ROOFB + 0.48, 'win'))
-    x0, x1, y0, y1 = EAVE
-    add(box(x0, x1, y0, y1, ROOFB - 0.1, ROOFB + 0.14, 'fascia'))
+    add(box(*STAIR_BOX, ROOFB, ROOFB + PH, 'block')); add(box(3.75, 7.0, -0.25, 3.25, ROOFB + PH, ROOF_TOP, 'band'))
+    add(box(*SKYLIGHT, ROOF_TOP, ROOF_TOP + 0.08, 'win'))
+    for c in CORNICES: add(box(*c, ROOFB - 0.12, ROOFB + 0.04, 'band'))
+    for (x1, x2, y1, y2) in PARAPETS:
+        add(box(x1, x2, y1, y2, ROOFB, ROOFB + PH, 'parapet')); add(box(x1 - 0.03, x2 + 0.03, y1 - 0.03, y2 + 0.03, ROOFB + PH, ROOF_TOP, 'band'))
     # cầu thang
     for pts, z in stair_treads(): add(Solid(pts, F1, F1 + z, 'tread'))
     return S
@@ -738,7 +728,7 @@ def levels_side(V, u, side, lv):
     for z, lb, note, du in lv: level(V, u + du, z, lb, side, note)
 
 LEVELS = [(GROUND, '−0.450', 'MẶT SÂN', -1.5), (F1, '±0.000', 'SÀN TẦNG 1', 0), (F2, '+3.300', 'SÀN TẦNG 2', 0),
-          (TOP2, '+6.500', 'ĐÁY SÀN MÁI', 0), (ROOF_Z0 + ROOF_RH, '+8.800', 'ĐỈNH NÓC', 0)]
+          (TOP2, '+6.500', 'ĐÁY SÀN MÁI', 0), (ROOF_TOP, '+7.400', 'ĐỈNH TƯỜNG CHẮN MÁI', 0)]
 
 def elevation(V, view, title, solids):
     render_view(V, view, solids)
@@ -756,13 +746,13 @@ def elevation(V, view, title, solids):
         dim_chain(V, 'x', [0, 7], GROUND - 0.9, 1)
         dim_chain(V, 'x', [0, 3, 7] if view == 'left' else [0, 4, 7], GROUND - 0.5, 1)
     hv = 17 if view in ('front', 'back') else 7
-    dim_chain(V, 'y', [GROUND, F1, F2, TOP2, ROOFB + 0.05, ROOF_Z0 + ROOF_RH], hv + 1.0, 1)
+    dim_chain(V, 'y', [GROUND, F1, F2, TOP2, ROOFB, ROOF_TOP], hv + 1.0, 1)
 
 def section(V, view, plane, title, solids, span):
     render_view(V, view, solids, plane)
     ground(V, -1.2, span + 1.2)
-    levels_side(V, -1.0, -1, LEVELS[:4] + [(ROOFB + 0.44, '+7.090', 'ĐỈNH MÁI BẰNG', -1.9)])
-    dim_chain(V, 'y', [GROUND, F1, F2 - 0.15, F2, TOP2, ROOFB], span + 1.0, 1)
+    levels_side(V, -1.0, -1, LEVELS)
+    dim_chain(V, 'y', [GROUND, F1, F2 - 0.15, F2, TOP2, ROOFB, ROOF_TOP], span + 1.0, 1)
 
 # ---------------------------------------------------------------- sheet layout
 CSS = """
@@ -848,6 +838,9 @@ svg { display: block; width: 420mm; height: 297mm; font-family: 'Be Vietnam Pro'
 .flat { fill: #dfe1e2; stroke: #1a1f24; stroke-width: .3 }
 .skylight { fill: #cfe3ee; stroke: #1a1f24; stroke-width: .2 }
 .roof { fill: #c5c9cc; stroke: none }
+.cornice { fill: #5d646b; stroke: #1a1f24; stroke-width: .15 }
+.flatmain { fill: #e3e5e6; stroke: #1a1f24; stroke-width: .2 }
+.drain { fill: #fff; stroke: #1a1f24; stroke-width: .2 }
 .roofedge { fill: none; stroke: #1a1f24; stroke-width: .3 }
 .tilel { stroke: #9aa1a6; stroke-width: .1 }
 .ridge { stroke: #1a1f24; stroke-width: .45 }
@@ -858,7 +851,7 @@ svg { display: block; width: 420mm; height: 297mm; font-family: 'Be Vietnam Pro'
 .lotline { fill: #f1f5ec; stroke: #1a1f24; stroke-width: .25; stroke-dasharray: 3 1 }
 .bldg { fill: #fff; stroke: #1a1f24; stroke-width: .35 }
 .bldgfaint { fill: #dfe1e2; stroke: #1a1f24; stroke-width: .15 }
-.bldgroof { fill: #c5c9cc; stroke: #1a1f24; stroke-width: .25 }
+.bldgroof { fill: #e3e5e6; stroke: #1a1f24; stroke-width: .25 }
 .terr { fill: #eedfcb; stroke: #1a1f24; stroke-width: .12 }
 .treec { fill: #dfe9d3; stroke: #7f9b6c; stroke-width: .18 }
 .gate { fill: #fff; stroke: #1a1f24; stroke-width: .2 }
@@ -965,8 +958,8 @@ def cover_sheet(cover_img):
     P.add('<text x="400" y="186.5" font-size="3.4" fill="#f3b35c" font-weight="700" text-anchor="end">0932 705 063</text>')
     P.add('<text x="400" y="180.5" font-size="2.3" fill="#ece6da" text-anchor="end" letter-spacing=".5">Bảo ALONE · CREATIVE STUDIO · GAME STUDIO</text>')
     # thông số
-    stats = [('KÍCH THƯỚC NHÀ', '17 × 7 m'), ('SỐ TẦNG', '2 tầng + mái thái'), ('DIỆN TÍCH SÀN', '184 m²'),
-             ('PHÒNG NGỦ', '4 phòng'), ('CHIỀU CAO TẦNG', '3.300 mm'), ('ĐỈNH NÓC', '+8.800')]
+    stats = [('KÍCH THƯỚC NHÀ', '17 × 7 m'), ('SỐ TẦNG', '2 tầng + mái bằng'), ('DIỆN TÍCH SÀN', '184 m²'),
+             ('PHÒNG NGỦ', '4 phòng'), ('CHIỀU CAO TẦNG', '3.300 mm'), ('ĐỈNH MÁI', '+7.400')]
     x = 30
     for k, v in stats:
         P.add(f'<text class="tb-k" x="{x}" y="212" font-size="2.0">{k}</text>')
@@ -1032,8 +1025,8 @@ def main():
     V = View(P, 85, 245, 100, flip=True); elevation(V, 'back', '', solids)
     title_under(V, 8.5, GROUND - 1.85, 'MẶT ĐỨNG SAU (TRỤC 9 → 1)', 'TỈ LỆ 1:100', P)
     title_block(P, 'KT-04', 'MẶT ĐỨNG CHÍNH · MẶT ĐỨNG SAU', '1:100', legend=('VẬT LIỆU', [
-        (swatch('el parapet'), 'Sơn nước trắng'), (swatch('el clad'), 'Ốp gỗ óc chó (ô thang)'), (swatch('elroof'), 'Ngói xám'),
-        (swatch('el win'), 'Kính khung nhôm đen'), (swatch('el band'), 'Viền sàn sơn ghi'), (swatch('el timber'), 'Gỗ pergola'),
+        (swatch('el parapet'), 'Sơn nước trắng'), (swatch('el clad'), 'Ốp gỗ óc chó (ô thang)'), 
+        (swatch('el win'), 'Kính khung nhôm đen'), (swatch('el band'), 'Viền sàn, sênô sơn ghi'), (swatch('el timber'), 'Gỗ pergola'),
         (swatch('el plinth'), 'Đá ốp chân tường')]))
     sheets.append(sheet(P.svg()))
 
@@ -1044,8 +1037,8 @@ def main():
     V = View(P, 222, 190, 75, flip=True); elevation(V, 'right', '', solids)
     title_under(V, 3.5, GROUND - 1.85, 'MẶT ĐỨNG BÊN PHẢI (TRỤC C → A)', 'TỈ LỆ 1:75', P)
     title_block(P, 'KT-05', 'MẶT ĐỨNG BÊN TRÁI · BÊN PHẢI', '1:75', legend=('VẬT LIỆU', [
-        (swatch('el parapet'), 'Sơn nước trắng'), (swatch('el clad'), 'Ốp gỗ óc chó (ô thang)'), (swatch('elroof'), 'Ngói xám'),
-        (swatch('el win'), 'Kính khung nhôm đen'), (swatch('el band'), 'Viền sàn sơn ghi'), (swatch('el timber'), 'Gỗ pergola')]))
+        (swatch('el parapet'), 'Sơn nước trắng'), (swatch('el clad'), 'Ốp gỗ óc chó (ô thang)'), 
+        (swatch('el win'), 'Kính khung nhôm đen'), (swatch('el band'), 'Viền sàn, sênô sơn ghi'), (swatch('el timber'), 'Gỗ pergola')]))
     sheets.append(sheet(P.svg()))
 
     # sections
@@ -1058,7 +1051,7 @@ def main():
     dim_chain(V, 'x', [0, 7], GROUND - 0.9, 1)
     title_under(V, 3.5, GROUND - 1.85, 'MẶT CẮT A-A', 'TỈ LỆ 1:100', P)
     title_block(P, 'KT-06', 'MẶT CẮT A-A · B-B', '1:100', legend=('KÝ HIỆU', [
-        (swatch('cut'), 'Kết cấu / tường bị cắt'), (swatch('cutglass'), 'Kính bị cắt'), (swatch('roofcut', 'line'), 'Mái ngói bị cắt'),
+        (swatch('cut'), 'Kết cấu / tường bị cắt'), (swatch('cutglass'), 'Kính bị cắt'),
         (swatch('el parapet'), 'Phần nhìn thấy phía sau')]))
     sheets.append(sheet(P.svg()))
 
