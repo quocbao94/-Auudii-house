@@ -812,16 +812,14 @@ function curtains(axis, at, a, b, z1, z2, inward, parent) {
       .replace('#include <beginnormal_vertex>', '#include <beginnormal_vertex>\nobjectNormal = normalize(mix(objectNormal, vec3(0.0, 1.0, 0.0), 0.7));');
     sh.fragmentShader = sh.fragmentShader.replace('#include <normal_fragment_begin>', THREE.ShaderChunk.normal_fragment_begin.replace('normal *= faceDirection;', ''));
   };
-  const N = isSmall ? 10000 : 45000, gr = rnd(99);
+  // tufts only inside the lot (back yard + side strips); outside the lot the flat lawn texture is enough
+  const N = isSmall ? 2500 : 7200, gr = rnd(99);
   const grass = new THREE.InstancedMesh(tuft, grassMat, N);
   const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), sc = new THREE.Vector3(), pos = new THREE.Vector3(), col = new THREE.Color(), up = new THREE.Vector3(0, 1, 0);
   let i = 0;
   while (i < N) {
-    const px = -14 + gr() * 46, py = -14 + gr() * 24.6;
-    if (py > 10.75) continue;
-    if (px > -1.25 && px < 18.25 && py > 7.1) continue;          // front yard paving
+    const px = -1.05 + gr() * 19.1, py = -4 + gr() * 11.1;               // lot: between side fences, back of lot to front paving
     if (px > -0.35 && px < 17.35 && py > -0.35 && py < 7.35) continue; // house
-    const d = Math.hypot(px - 8.5, py - 3.5); if (d > 13 + gr() * 9) continue;
     pos.set(X(px), 0, Z(py)); q.setFromAxisAngle(up, gr() * 6.28); const s = 0.8 + gr() * 0.7; sc.set(s, s * (0.7 + gr() * 0.6), s);
     m4.compose(pos, q, sc); grass.setMatrixAt(i, m4);
     col.setHSL(0.24 + gr() * 0.05, 0.42 + gr() * 0.18, 0.2 + gr() * 0.1); grass.setColorAt(i, col);
