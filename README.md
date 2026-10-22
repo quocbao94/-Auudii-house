@@ -17,6 +17,13 @@ Huy hiệu góc phải trên hiện số người đang xem, tổng lượt xem 
 - Xem số liệu thô: mở `https://<tên-site>.netlify.app/api/stats`.
 - Ở nơi không có hàm này (bản xem trên claude.ai, `npx serve site`) huy hiệu tự ẩn.
 
+## Bản vẽ 2D
+`site/ban-ve/KT-01_ban-ve-phuong-an.pdf` (A3, 7 tờ: bìa, mặt bằng tầng 1 – tầng 2 – mái + tổng thể, 4 mặt đứng, mặt cắt A-A và B-B). Bản vẽ lấy cùng số liệu hình học với mô hình 3D. Muốn xuất lại thì sửa `tools/ban-ve/model.py`, rồi chạy:
+```
+cd tools/ban-ve && python3 gen.py /tmp/bv.html cover.jpg && node print.mjs /tmp/bv.html ../../site/ban-ve/KT-01_ban-ve-phuong-an.pdf
+```
+(`print.mjs` dùng Playwright + Chromium.)
+
 ## Chức năng
 - **Chế độ xem**: Toàn nhà · Bỏ mái · Tầng 2 · Tầng 1 (phím `1`–`4`). Ở chế độ tầng có thể bật/tắt mặt cắt tường ở cao độ sàn + 1,3 m (phím `C`).
 - **Ngày – đêm**: thanh trượt giờ 0–24h, mặt trời và bầu trời thay đổi theo giờ; nút nhanh Sáng / Chiều / Hoàng hôn / Đêm (phím `N`).
